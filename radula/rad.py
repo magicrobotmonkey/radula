@@ -858,6 +858,8 @@ def do_part_upload(args):
 
         # Print some timings
         t2 = time.time() - t1
+        s = len(data)
+        logger.info("Uploaded part %s of %s (%s) in %0.2fs at %sps" % (i+1, num_parts, human_size(s), t2, human_size(s/t2)))
     except:
         exc_class, exc, tb = sys.exc_info()
         logger.debug("Retry request %d of max %d times" % (current_tries, max_tries))
@@ -867,7 +869,7 @@ def do_part_upload(args):
         else:
             current_tries += 1
             logger.warn("Error while uploading. Attempting retry #{0} of {1}".format(current_tries, max_tries))
+            logger.warn(exc)
+            logger.warn(tb)
             time.sleep(3)
             do_part_upload((s3, bucket_name, mpu_id, source_name, i, start, size, max_tries, current_tries, num_parts, copy, dest_conn))
-    s = len(data)
-    logger.info("Uploaded part %s of %s (%s) in %0.2fs at %sps" % (i+1, num_parts, human_size(s), t2, human_size(s/t2)))
